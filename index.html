@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心花怒放公司餐登记台</title>
+  <meta
+    name="description"
+    content="适合门店手机填写的公司餐登记台，优先使用可选项，并支持将登记内容保存为截图。"
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+SC:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-badge">花</div>
+        <div>
+          <p class="eyebrow">XINHUA NUFANG</p>
+          <h1>公司餐登记台</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="saveBoardBtn" class="pill-button warm" type="button">保存总览截图</button>
+        <button id="exportBtn" class="pill-button accent" type="button">导出记录</button>
+        <button id="clearBtn" class="pill-button ghost" type="button">清空本机</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">少打字，多选择</p>
+          <h2>把纸质团餐登记，改成门店手机就能录、还能直接留图的线上表单。</h2>
+          <p class="hero-text">
+            页面里的核心信息尽量都做成可选项：付款方式、配送方式、时段、门店确认、常用备注。
+            录入后自动计算金额，并保存在当前浏览器里。需要发给老板、财务或群里时，可以一键生成截图保存。
+          </p>
+          <div class="hero-tags">
+            <span>自动金额</span>
+            <span>固定选项</span>
+            <span>本机保存</span>
+            <span>一键截图</span>
+          </div>
+        </div>
+
+        <aside class="snapshot-panel">
+          <div class="snapshot-head">
+            <h3>今日概览</h3>
+            <button id="saveTodayBtn" class="tiny-button" type="button">保存今日图</button>
+          </div>
+          <div class="snapshot-grid">
+            <article>
+              <strong id="statOrders">0</strong>
+              <span>登记笔数</span>
+            </article>
+            <article>
+              <strong id="statMeals">0</strong>
+              <span>餐份数量</span>
+            </article>
+            <article>
+              <strong id="statFood">0.00</strong>
+              <span>餐费合计</span>
+            </article>
+            <article>
+              <strong id="statDelivery">0.00</strong>
+              <span>配送费合计</span>
+            </article>
+          </div>
+        </aside>
+      </section>
+
+      <section class="workspace">
+        <form id="mealForm" class="entry-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Entry Form</p>
+              <h3>新建登记</h3>
+            </div>
+            <span class="status-chip" id="editingHint">新增模式</span>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>送餐日期</span>
+              <input id="mealDate" name="mealDate" type="date" required>
+            </label>
+
+            <label class="field">
+              <span>时段</span>
+              <select id="mealPeriod" name="mealPeriod" required></select>
+            </label>
+
+            <label class="field">
+              <span>门店</span>
+              <select id="storeName" name="storeName" required></select>
+            </label>
+
+            <label class="field">
+              <span>送餐单位</span>
+              <select id="companyName" name="companyName" required></select>
+            </label>
+
+            <label class="field">
+              <span>数量</span>
+              <select id="mealCount" name="mealCount" required></select>
+            </label>
+
+            <label class="field">
+              <span>单价</span>
+              <select id="mealPrice" name="mealPrice" required></select>
+            </label>
+
+            <label class="field readonly">
+              <span>餐费金额</span>
+              <input id="mealAmount" name="mealAmount" type="text" readonly>
+            </label>
+
+            <label class="field">
+              <span>付款方式</span>
+              <select id="paymentMethod" name="paymentMethod" required></select>
+            </label>
+
+            <label class="field">
+              <span>配送方式</span>
+              <select id="deliveryMethod" name="deliveryMethod" required></select>
+            </label>
+
+            <label class="field">
+              <span>配送金额</span>
+              <select id="deliveryFee" name="deliveryFee" required></select>
+            </label>
+
+            <label class="field">
+              <span>门店确认</span>
+              <select id="approvalStatus" name="approvalStatus" required></select>
+            </label>
+
+            <label class="field">
+              <span>操作人</span>
+              <select id="operatorName" name="operatorName" required></select>
+            </label>
+          </div>
+
+          <div class="choice-block">
+            <div class="choice-title">
+              <span>常用备注</span>
+              <small>支持多选，尽量不再手打文字</small>
+            </div>
+            <div id="remarkChips" class="chip-group"></div>
+          </div>
+
+          <div class="choice-block">
+            <div class="choice-title">
+              <span>配送说明</span>
+              <small>选一个最贴近的场景</small>
+            </div>
+            <div id="dispatchChips" class="chip-group"></div>
+          </div>
+
+          <div class="summary-strip">
+            <div>
+              <span>自动小结</span>
+              <strong id="summaryTotal">总支出 0.00</strong>
+            </div>
+            <p id="summaryText">请选择数量、单价和配送金额，系统会自动算出本次总支出。</p>
+          </div>
+
+          <div class="form-actions">
+            <button class="action-button primary" type="submit">保存本条登记</button>
+            <button id="saveCurrentBtn" class="action-button warm" type="button">保存当前截图</button>
+            <button id="resetBtn" class="action-button secondary" type="button">重置表单</button>
+          </div>
+        </form>
+
+        <section class="records-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Saved Records</p>
+              <h3>已保存记录</h3>
+            </div>
+            <span class="status-chip muted" id="recordCountLabel">0 条</span>
+          </div>
+
+          <div class="filter-row">
+            <label class="field compact">
+              <span>查看日期</span>
+              <input id="filterDate" type="date">
+            </label>
+            <label class="field compact">
+              <span>查看门店</span>
+              <select id="filterStore"></select>
+            </label>
+          </div>
+
+          <div id="recordList" class="record-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <section class="capture-shell" aria-hidden="true">
+    <article id="captureBoard" class="capture-card">
+      <header class="capture-header">
+        <div>
+          <p class="eyebrow">XINHUA NUFANG</p>
+          <h2 id="captureTitle">公司餐登记截图</h2>
+        </div>
+        <div class="capture-mark">对账留存</div>
+      </header>
+
+      <div class="capture-meta">
+        <div>
+          <span>日期</span>
+          <strong id="captureDate">-</strong>
+        </div>
+        <div>
+          <span>门店</span>
+          <strong id="captureStore">-</strong>
+        </div>
+        <div>
+          <span>时段</span>
+          <strong id="capturePeriod">-</strong>
+        </div>
+      </div>
+
+      <div class="capture-company">
+        <span>送餐单位</span>
+        <h3 id="captureCompany">-</h3>
+      </div>
+
+      <div class="capture-grid">
+        <article>
+          <span>数量</span>
+          <strong id="captureCount">0</strong>
+        </article>
+        <article>
+          <span>单价</span>
+          <strong id="capturePrice">0.00</strong>
+        </article>
+        <article>
+          <span>餐费</span>
+          <strong id="captureAmount">0.00</strong>
+        </article>
+        <article>
+          <span>配送费</span>
+          <strong id="captureDelivery">0.00</strong>
+        </article>
+      </div>
+
+      <dl class="capture-list">
+        <dt>付款方式</dt>
+        <dd id="capturePayment">-</dd>
+        <dt>配送方式</dt>
+        <dd id="captureDispatch">-</dd>
+        <dt>门店确认</dt>
+        <dd id="captureApproval">-</dd>
+        <dt>操作人</dt>
+        <dd id="captureOperator">-</dd>
+      </dl>
+
+      <div class="capture-tags" id="captureTags"></div>
+
+      <footer class="capture-footer">
+        <div>
+          <span>总支出</span>
+          <strong id="captureTotal">0.00</strong>
+        </div>
+        <p id="captureNote">用于门店留底、微信群同步或财务对账。</p>
+      </footer>
+    </article>
+  </section>
+
+  <template id="recordCardTemplate">
+    <article class="record-card">
+      <div class="record-head">
+        <div>
+          <p class="record-date"></p>
+          <h4 class="record-company"></h4>
+        </div>
+        <span class="record-period"></span>
+      </div>
+
+      <div class="record-metrics"></div>
+      <dl class="record-meta"></dl>
+      <div class="record-tags"></div>
+
+      <div class="record-actions">
+        <button class="mini-button screenshot" type="button">保存截图</button>
+        <button class="mini-button edit" type="button">编辑</button>
+        <button class="mini-button duplicate" type="button">复制一条</button>
+        <button class="mini-button danger" type="button">删除</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
